@@ -2,8 +2,9 @@ package com.ismailcet.ecommerceuserservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class EcommerceUserServiceApplication {
 
 	public static void main(String[] args) {

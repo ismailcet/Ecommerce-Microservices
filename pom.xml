@@ -15,6 +15,7 @@
   <modules>
     <module>ecommerce-product-service</module>
       <module>ecommerce-user-service</module>
+    <module>ecommerce-order-service</module>
   </modules>
 
 
