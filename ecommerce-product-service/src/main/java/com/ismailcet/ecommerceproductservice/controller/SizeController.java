@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/api/size")
+@RequestMapping("/v1/api/sizes")
 public class SizeController {
     private final SizeService sizeService;
 
