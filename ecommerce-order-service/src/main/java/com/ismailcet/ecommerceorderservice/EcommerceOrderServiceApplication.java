@@ -16,10 +16,4 @@ public class EcommerceOrderServiceApplication {
 		SpringApplication.run(EcommerceOrderServiceApplication.class, args);
 	}
 
-	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate(RestTemplateBuilder builder){
-		return builder.build();
-	}
-
 }

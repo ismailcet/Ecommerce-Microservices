@@ -9,17 +9,19 @@ import com.ismailcet.ecommerceorderservice.entity.OrderItem;
 import com.ismailcet.ecommerceorderservice.exception.OrderNotFoundException;
 import com.ismailcet.ecommerceorderservice.repository.OrderRepository;
 import com.ismailcet.ecommerceorderservice.utils.HttpConfig;
+import com.ismailcet.ecommerceorderservice.utils.OrderUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,67 +29,72 @@ import java.util.stream.Collectors;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderDtoConverter orderDtoConverter;
-    private final HttpConfig httpConfig;
-    public OrderService(OrderRepository orderRepository, OrderDtoConverter orderDtoConverter, HttpConfig httpConfig) {
+    private final OrderUtils orderUtils;
+    private final RestTemplate restTemplate;
+    public OrderService(OrderRepository orderRepository, OrderDtoConverter orderDtoConverter, OrderUtils orderUtils, RestTemplate restTemplate) {
         this.orderRepository = orderRepository;
         this.orderDtoConverter = orderDtoConverter;
-        this.httpConfig = httpConfig;
+        this.orderUtils = orderUtils;
+        this.restTemplate = restTemplate;
     }
 
-    public OrderDto createOrder(CreateOrderRequest createOrderRequest) throws IOException, InterruptedException {
+    public OrderDto createOrder(CreateOrderRequest createOrderRequest) throws RuntimeException {
         Order order =
                 new Order();
+
         userExistsSaveUserId(createOrderRequest, order);
 
         order.setCreatedDate(new Date());
         order.setCargoStatus(createOrderRequest.getCargoStatus());
         order.setAmount(createOrderRequest.getAmount());
         order.setAddress(createOrderRequest.getAddress());
-        order.setOrderNumber(generateOrderNumber(order.getUserId()));
+        order.setOrderNumber(orderUtils.generateOrderNumber(order.getUserId()));
 
         order.setOrderItems(convertRequestOrderItemToOrderItemList(createOrderRequest, order));
         orderRepository.save(order);
         return orderDtoConverter.convert(order);
     }
-    private List<OrderItem> convertRequestOrderItemToOrderItemList(CreateOrderRequest createOrderRequest, Order order){
+    private List<OrderItem> convertRequestOrderItemToOrderItemList(CreateOrderRequest createOrderRequest, Order order) {
         List<OrderItem> orderItems = new ArrayList<>();
         for(OrderItemDto orderItemDto:createOrderRequest.getOrderItems()){
-            OrderItem orderItem = OrderItem.builder()
-                    .order(order)
-                    .quantity(orderItemDto.getQuantity())
-                    .productId(orderItemDto.getProductId())
-                    .build();
+
+            OrderItem orderItem = productExistsReturnOrderItem(orderItemDto);
+            orderItem.setOrder(order);
 
             orderItems.add(orderItem);
         }
         return orderItems;
     }
-    private void userExistsSaveUserId(CreateOrderRequest createOrderRequest, Order order) throws IOException, InterruptedException {
-        HttpResponse<String> response =
-                httpConfig.createHttpRequestWithUserId("http://user-service/v1/api/users", createOrderRequest.getUserId());
-        System.out.println(response.body());
-        if(response.statusCode() == 200){
-            order.setUserId(createOrderRequest.getUserId());
-        }else{
-            throw new OrderNotFoundException("User Id is not exist ! ");
-        }
-    }
-    private String generateOrderNumber(Integer userId){
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmssddMMyyyy");
-        String currentDateTime = now.format(formatter);
-        String randomDigits = generateNumberDigits(4);
-        String combination = userId + "-" + currentDateTime + "-" + randomDigits;
-        return combination;
-    }
-    private String generateNumberDigits(int i) {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder(i);
+    private OrderItem productExistsReturnOrderItem(OrderItemDto orderItemDto) throws RuntimeException{
+        try{
+            ResponseEntity<String> response =
+                    restTemplate.getForEntity("http://product-service/v1/api/products/"+orderItemDto.getProductId(),String.class);
 
-        for(int j = 0; j<i;j++){
-            sb.append(random.nextInt(10));
+
+            if(response.getStatusCodeValue() == 200){
+                OrderItem orderItem = OrderItem.builder()
+                        .quantity(orderItemDto.getQuantity())
+                        .productId(orderItemDto.getProductId())
+                        .build();
+                return orderItem;
+            }
+            throw new OrderNotFoundException("Product Id is not found !");
+        }catch (HttpStatusCodeException ex){
+            throw new OrderNotFoundException("Product Id is not found ! ");
         }
-        return sb.toString();
+    }
+    private void userExistsSaveUserId(CreateOrderRequest createOrderRequest, Order order) throws RuntimeException {
+
+        try{
+            Integer response =
+                    restTemplate.getForEntity("http://user-service/v1/api/users/"+createOrderRequest.getUserId(),String.class).getStatusCodeValue();
+            System.out.println(response);
+            if(response == 200){
+                order.setUserId(createOrderRequest.getUserId());
+            }
+        }catch (HttpStatusCodeException ex){
+            throw new OrderNotFoundException("User Id is not found ! ");
+        }
     }
 
     public List<OrderDto> getAllOrders() {
