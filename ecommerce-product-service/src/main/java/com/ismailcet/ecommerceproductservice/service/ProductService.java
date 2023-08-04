@@ -6,6 +6,7 @@ import com.ismailcet.ecommerceproductservice.dto.response.ProductDto;
 import com.ismailcet.ecommerceproductservice.entity.Category;
 import com.ismailcet.ecommerceproductservice.entity.Product;
 import com.ismailcet.ecommerceproductservice.entity.Size;
+import com.ismailcet.ecommerceproductservice.exception.ProductNotFoundException;
 import com.ismailcet.ecommerceproductservice.repository.CategoryRepository;
 import com.ismailcet.ecommerceproductservice.repository.ProductRepository;
 import com.ismailcet.ecommerceproductservice.repository.SizeRepository;
@@ -47,7 +48,7 @@ public class ProductService {
 
     public ProductDto updateProductById(Integer id, CreateProductRequest updateProductRequest) {
         Product product =
-                productRepository.findById(id).orElseThrow(() -> new NullPointerException("Product Id does not exist ! "));
+                productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product Id does not exist ! "));
         Set<Size> sizes =
                 getSizeForProduct(updateProductRequest.getSizeIdList());
         Set<Category> categories =
@@ -68,7 +69,7 @@ public class ProductService {
         return categoryIdList.stream()
                 .map( c -> categoryRepository
                         .findById(c)
-                        .orElseThrow(() -> new NullPointerException("Category Id does not exist !")))
+                        .orElseThrow(() -> new ProductNotFoundException("Category Id does not exist !")))
                 .collect(Collectors.toSet());
     }
 
@@ -77,13 +78,13 @@ public class ProductService {
                 .map((s) -> sizeRepository
                         .findById(s)
                         .orElseThrow(
-                                () -> new NullPointerException("Size Id Not Found !")))
+                                () -> new ProductNotFoundException("Size Id Not Found !")))
                 .collect(Collectors.toSet());
     }
 
     public void deleteProductById(Integer id) {
         Product product =
-                productRepository.findById(id).orElseThrow(() -> new NullPointerException("Product Id does not exist ! "));
+                productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product Id does not exist ! "));
         productRepository.deleteById(id);
     }
 
@@ -95,7 +96,7 @@ public class ProductService {
 
     public ProductDto getProductByProductId(Integer id) {
         Product product =
-                productRepository.findById(id).orElseThrow(() -> new NullPointerException("Product Id does not found ! "));
+                productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product Id does not found ! "));
 
         return ProductDtoConverter.converter(product);
     }

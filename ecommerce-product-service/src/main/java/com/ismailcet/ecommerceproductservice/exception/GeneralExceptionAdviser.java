@@ -1,4 +1,4 @@
-package com.ismailcet.ecommerceuserservice.exception;
+package com.ismailcet.ecommerceproductservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +12,16 @@ import java.util.List;
 @RestControllerAdvice
 public class GeneralExceptionAdviser {
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handlerUserNotFoundException(UserNotFoundException ex){
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<?> handler(ProductNotFoundException exception){
         List<String> details = new ArrayList<>();
-        details.add(ex.getMessage());
+        details.add(exception.getMessage());
 
         ExceptionResponse response =
                 new ExceptionResponse(
                         LocalDateTime.now(),
                         HttpStatus.NOT_FOUND,
-                        ex.getMessage(),
+                        exception.getMessage(),
                         details);
 
         return new ResponseEntity<>(response.getMessage(), response.getStatus());

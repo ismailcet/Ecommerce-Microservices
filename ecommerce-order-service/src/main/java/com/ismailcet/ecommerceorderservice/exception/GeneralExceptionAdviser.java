@@ -26,4 +26,14 @@ public class GeneralExceptionAdviser {
 
         return new ResponseEntity<>(response, response.getStatus());
     }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handle(UserNotFoundException ex){
+        return new ResponseEntity<>(ex.getExceptionMessage(),
+                HttpStatus.resolve(ex.getExceptionMessage().status()));
+    }
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<?> handle(ProductNotFoundException ex){
+        return new ResponseEntity<>(ex.getExceptionMessage(),
+                HttpStatus.resolve(ex.getExceptionMessage().status()));
+    }
 }

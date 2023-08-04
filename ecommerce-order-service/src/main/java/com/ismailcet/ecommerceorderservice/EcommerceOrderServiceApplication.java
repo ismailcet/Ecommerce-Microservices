@@ -1,5 +1,8 @@
 package com.ismailcet.ecommerceorderservice;
 
+import com.ismailcet.ecommerceorderservice.client.RetreiveMessageErrorDecoder;
+import feign.Logger;
+import feign.codec.ErrorDecoder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -18,4 +21,12 @@ public class EcommerceOrderServiceApplication {
 		SpringApplication.run(EcommerceOrderServiceApplication.class, args);
 	}
 
+	@Bean
+	public ErrorDecoder errorDecoder(){
+		return new RetreiveMessageErrorDecoder();
+	}
+	@Bean
+	Logger.Level feignLoggerLevel(){
+		return Logger.Level.FULL;
+	}
 }
