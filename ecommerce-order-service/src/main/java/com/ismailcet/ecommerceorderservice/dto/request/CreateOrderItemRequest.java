@@ -1,4 +1,4 @@
-package com.ismailcet.ecommerceorderservice.dto.response;
+package com.ismailcet.ecommerceorderservice.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderItemDto {
+public class CreateOrderItemRequest {
     private Integer productId;
-    private String name;
-    private Double price;
     private Integer quantity;
 }

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/api/orders")
+@RequestMapping("/v1/order")
 public class OrderController {
     private final OrderService orderService;
 

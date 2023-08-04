@@ -1,14 +1,17 @@
 package com.ismailcet.ecommerceorderservice.service;
 
+import com.ismailcet.ecommerceorderservice.client.ProductServiceClient;
+import com.ismailcet.ecommerceorderservice.client.UserServiceClient;
 import com.ismailcet.ecommerceorderservice.dto.converter.OrderDtoConverter;
+import com.ismailcet.ecommerceorderservice.dto.request.CreateOrderItemRequest;
 import com.ismailcet.ecommerceorderservice.dto.request.CreateOrderRequest;
 import com.ismailcet.ecommerceorderservice.dto.response.OrderDto;
-import com.ismailcet.ecommerceorderservice.dto.response.OrderItemDto;
+import com.ismailcet.ecommerceorderservice.dto.response.ProductDto;
+import com.ismailcet.ecommerceorderservice.dto.response.UserDto;
 import com.ismailcet.ecommerceorderservice.entity.Order;
 import com.ismailcet.ecommerceorderservice.entity.OrderItem;
 import com.ismailcet.ecommerceorderservice.exception.OrderNotFoundException;
 import com.ismailcet.ecommerceorderservice.repository.OrderRepository;
-import com.ismailcet.ecommerceorderservice.utils.HttpConfig;
 import com.ismailcet.ecommerceorderservice.utils.OrderUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,15 +31,17 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderDtoConverter orderDtoConverter;
     private final OrderUtils orderUtils;
-    private final RestTemplate restTemplate;
-    public OrderService(OrderRepository orderRepository, OrderDtoConverter orderDtoConverter, OrderUtils orderUtils, RestTemplate restTemplate) {
+    private final ProductServiceClient productServiceClient;
+    private final UserServiceClient userServiceClient;
+    public OrderService(OrderRepository orderRepository, OrderDtoConverter orderDtoConverter, OrderUtils orderUtils, ProductServiceClient productServiceClient, UserServiceClient userServiceClient) {
         this.orderRepository = orderRepository;
         this.orderDtoConverter = orderDtoConverter;
         this.orderUtils = orderUtils;
-        this.restTemplate = restTemplate;
+        this.productServiceClient = productServiceClient;
+        this.userServiceClient = userServiceClient;
     }
 
-    public OrderDto createOrder(CreateOrderRequest createOrderRequest) throws RuntimeException {
+    public OrderDto createOrder(CreateOrderRequest createOrderRequest) {
         Order order =
                 new Order();
 
@@ -56,25 +59,25 @@ public class OrderService {
     }
     private List<OrderItem> convertRequestOrderItemToOrderItemList(CreateOrderRequest createOrderRequest, Order order) {
         List<OrderItem> orderItems = new ArrayList<>();
-        for(OrderItemDto orderItemDto:createOrderRequest.getOrderItems()){
+        for(CreateOrderItemRequest createOrderItemRequest:createOrderRequest.getOrderItems()){
 
-            OrderItem orderItem = productExistsReturnOrderItem(orderItemDto);
+            OrderItem orderItem = productExistsReturnOrderItem(createOrderItemRequest);
             orderItem.setOrder(order);
 
             orderItems.add(orderItem);
         }
         return orderItems;
     }
-    private OrderItem productExistsReturnOrderItem(OrderItemDto orderItemDto) throws RuntimeException{
+    private OrderItem productExistsReturnOrderItem(CreateOrderItemRequest createOrderItemRequest){
         try{
-            ResponseEntity<String> response =
-                    restTemplate.getForEntity("http://product-service/v1/api/products/"+orderItemDto.getProductId(),String.class);
+            ResponseEntity<ProductDto> response =
+                    productServiceClient.getProductByProductId(createOrderItemRequest.getProductId());
 
 
             if(response.getStatusCodeValue() == 200){
                 OrderItem orderItem = OrderItem.builder()
-                        .quantity(orderItemDto.getQuantity())
-                        .productId(orderItemDto.getProductId())
+                        .quantity(createOrderItemRequest.getQuantity())
+                        .productId(createOrderItemRequest.getProductId())
                         .build();
                 return orderItem;
             }
@@ -83,13 +86,13 @@ public class OrderService {
             throw new OrderNotFoundException("Product Id is not found ! ");
         }
     }
-    private void userExistsSaveUserId(CreateOrderRequest createOrderRequest, Order order) throws RuntimeException {
+    private void userExistsSaveUserId(CreateOrderRequest createOrderRequest, Order order) {
 
         try{
-            Integer response =
-                    restTemplate.getForEntity("http://user-service/v1/api/users/"+createOrderRequest.getUserId(),String.class).getStatusCodeValue();
-            System.out.println(response);
-            if(response == 200){
+            ResponseEntity<UserDto> response =
+                    userServiceClient.getUserByUserId(createOrderRequest.getUserId());
+
+            if(response.getStatusCode() == HttpStatus.OK){
                 order.setUserId(createOrderRequest.getUserId());
             }
         }catch (HttpStatusCodeException ex){
@@ -112,8 +115,7 @@ public class OrderService {
     }
 
     public List<OrderDto> getOrdersByUserId(Integer id) {
-        List<Order> orders = orderRepository.findAllByUserId(id);
-        return orders.stream()
+        return orderRepository.findAllByUserId(id).stream()
                 .map(orderDtoConverter::convert)
                 .collect(Collectors.toList());
     }

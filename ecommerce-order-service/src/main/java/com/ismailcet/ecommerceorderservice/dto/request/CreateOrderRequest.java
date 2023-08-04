@@ -19,5 +19,5 @@ public class CreateOrderRequest {
      private CargoStatus cargoStatus;
      private String address;
      private Double amount;
-     private List<OrderItemDto> orderItems;
+     private List<CreateOrderItemRequest> orderItems;
 }
