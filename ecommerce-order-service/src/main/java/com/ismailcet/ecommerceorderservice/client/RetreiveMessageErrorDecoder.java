@@ -24,7 +24,7 @@ public class RetreiveMessageErrorDecoder implements ErrorDecoder {
                     HttpStatus.resolve(response.status()).getReasonPhrase(),
                     IOUtils.toString(body, StandardCharsets.UTF_8),
                     response.request().url());
-            System.out.println(response.status());
+
         }catch(IOException exception){
             return new Exception(exception.getMessage());
         }
