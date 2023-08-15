@@ -20,5 +20,6 @@ public class OrderDto {
     private CargoStatus cargoStatus;
     private String address;
     private Double amount;
+    private boolean paymentStatus;
     private List<OrderItemDto> orderItems;
 }

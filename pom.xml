@@ -18,6 +18,7 @@
     <module>ecommerce-order-service</module>
       <module>discovery-server</module>
     <module>api-gateway</module>
+      <module>ecommerce-payment-service</module>
   </modules>
 
 

@@ -51,6 +51,7 @@ public class OrderService {
         order.setCargoStatus(createOrderRequest.getCargoStatus());
         order.setAmount(createOrderRequest.getAmount());
         order.setAddress(createOrderRequest.getAddress());
+        order.setPaymentStatus(false);
         order.setOrderNumber(orderUtils.generateOrderNumber(order.getUserId()));
 
         order.setOrderItems(convertRequestOrderItemToOrderItemList(createOrderRequest, order));

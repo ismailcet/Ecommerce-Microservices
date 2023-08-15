@@ -28,6 +28,7 @@ public class OrderDtoConverter {
                 .cargoStatus(order.getCargoStatus())
                 .address(order.getAddress())
                 .amount(order.getAmount())
+                .paymentStatus(false)
                 .orderItems(order.getOrderItems()
                         .stream()
                         .map(orderItemDtoConverter::convert)

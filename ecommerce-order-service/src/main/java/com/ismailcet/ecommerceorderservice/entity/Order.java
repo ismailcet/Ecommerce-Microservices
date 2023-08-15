@@ -33,6 +33,8 @@ public class Order {
     private String address;
     @Column(name = "amount")
     private Double amount;
+    @Column(name = "paymentStatus")
+    private boolean paymentStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
