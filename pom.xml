@@ -19,6 +19,7 @@
       <module>discovery-server</module>
     <module>api-gateway</module>
       <module>ecommerce-payment-service</module>
+      <module>ecommerce-notification-service</module>
   </modules>
 
 

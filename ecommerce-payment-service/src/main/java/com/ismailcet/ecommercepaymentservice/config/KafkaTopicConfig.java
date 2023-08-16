@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class KafkaTopicConfig {
 
-        @Value("${spring.kafka.topic.name }")
+        @Value("${spring.kafka.topic.name}")
         private String topicName ;
 
 
