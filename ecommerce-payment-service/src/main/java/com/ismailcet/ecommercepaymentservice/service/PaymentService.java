@@ -17,7 +17,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,13 +57,14 @@ public class PaymentService {
     }
 
     private PaymentEvent createPaymentEvent(OrderDto body) {
-        List<Integer> productIdList = body.getOrderItems()
+        Map<Integer, Integer> productList = body.getOrderItems()
                 .stream()
-                .map(OrderItemDto::getProductId)
-                .toList();
+                .collect(Collectors.
+                        toMap(OrderItemDto::getProductId, OrderItemDto::getQuantity));
+
         return PaymentEvent.builder()
                 .orderId(body.getId())
-                .productIdList(productIdList)
+                .productIdList(productList)
                 .userEmail(body.getUser().getEmail())
                 .build();
     }

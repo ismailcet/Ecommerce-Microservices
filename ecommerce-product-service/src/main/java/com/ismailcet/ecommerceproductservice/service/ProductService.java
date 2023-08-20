@@ -100,4 +100,18 @@ public class ProductService {
 
         return ProductDtoConverter.converter(product);
     }
+
+    public String decreaseStockByProductId(Integer id, Integer number) {
+        Product product = productRepository
+                .findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product Not Found ! "));
+
+        if(product.getStock() < number){
+            throw new ProductNotFoundException("Stock is Not Enough !");
+        }
+        product.setStock(product.getStock() - number);
+        productRepository.save(product);
+
+        return "Decrease Stock is successfully !";
+    }
 }

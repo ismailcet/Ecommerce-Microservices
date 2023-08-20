@@ -46,4 +46,9 @@ public class ProductController {
     public ResponseEntity<ProductDto> getProductByProductId(@PathVariable("productId") Integer id){
         return ResponseEntity.ok(productService.getProductByProductId(id));
     }
+
+    @PutMapping("/stock/${productId}")
+    public ResponseEntity<String> decreaseStockByProductId(@PathVariable Integer id, @RequestBody Integer number){
+        return ResponseEntity.ok(productService.decreaseStockByProductId(id, number));
+    }
 }
