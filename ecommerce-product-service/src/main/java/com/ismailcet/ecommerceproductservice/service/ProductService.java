@@ -10,6 +10,7 @@ import com.ismailcet.ecommerceproductservice.exception.ProductNotFoundException;
 import com.ismailcet.ecommerceproductservice.repository.CategoryRepository;
 import com.ismailcet.ecommerceproductservice.repository.ProductRepository;
 import com.ismailcet.ecommerceproductservice.repository.SizeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ProductService {
     private final ProductRepository productRepository;
     private final SizeRepository sizeRepository;
@@ -101,17 +103,18 @@ public class ProductService {
         return ProductDtoConverter.converter(product);
     }
 
-    public String decreaseStockByProductId(Integer id, Integer number) {
+    public String decreaseStockByProductId(Integer id, Integer quantity) {
+
         Product product = productRepository
                 .findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product Not Found ! "));
 
-        if(product.getStock() < number){
+        if(product.getStock() < quantity){
             throw new ProductNotFoundException("Stock is Not Enough !");
         }
-        product.setStock(product.getStock() - number);
+        product.setStock(product.getStock() - quantity);
+        log.info("Web Service Çalıştı" + id + "Quantıty = " + quantity);
         productRepository.save(product);
-
         return "Decrease Stock is successfully !";
     }
 }

@@ -1,6 +1,7 @@
 package com.ismailcet.ecommerceorderservice.controller;
 
 import com.ismailcet.ecommerceorderservice.dto.request.CreateOrderRequest;
+import com.ismailcet.ecommerceorderservice.dto.request.UpdatePaymentStatusRequest;
 import com.ismailcet.ecommerceorderservice.dto.response.OrderDto;
 import com.ismailcet.ecommerceorderservice.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -38,5 +39,10 @@ public class OrderController {
         return ResponseEntity.ok(
                 orderService.getOrdersByUserId(id)
         );
+    }
+    @PutMapping("/status/{orderId}")
+    public ResponseEntity<String> changePaymentStatus(@PathVariable("orderId") Integer orderId,@RequestBody UpdatePaymentStatusRequest updatePaymentStatusRequest){
+        System.out.println(updatePaymentStatusRequest.isStatus());
+        return ResponseEntity.ok(orderService.changePaymentStatus(orderId,updatePaymentStatusRequest));
     }
 }

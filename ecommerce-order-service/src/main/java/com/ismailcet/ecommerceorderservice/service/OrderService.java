@@ -5,6 +5,7 @@ import com.ismailcet.ecommerceorderservice.client.UserServiceClient;
 import com.ismailcet.ecommerceorderservice.dto.converter.OrderDtoConverter;
 import com.ismailcet.ecommerceorderservice.dto.request.CreateOrderItemRequest;
 import com.ismailcet.ecommerceorderservice.dto.request.CreateOrderRequest;
+import com.ismailcet.ecommerceorderservice.dto.request.UpdatePaymentStatusRequest;
 import com.ismailcet.ecommerceorderservice.dto.response.OrderDto;
 import com.ismailcet.ecommerceorderservice.dto.response.ProductDto;
 import com.ismailcet.ecommerceorderservice.dto.response.UserDto;
@@ -18,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -119,5 +119,17 @@ public class OrderService {
         return orderRepository.findAllByUserId(id).stream()
                 .map(orderDtoConverter::convert)
                 .collect(Collectors.toList());
+    }
+
+    public String changePaymentStatus(Integer orderId, UpdatePaymentStatusRequest updatePaymentStatusRequest) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(
+                        ()-> new OrderNotFoundException("Order Not Found ! "));
+
+        order.setPaymentStatus(updatePaymentStatusRequest.isStatus());
+
+        orderRepository.save(order);
+
+        return "Successfully change order status " + order.isPaymentStatus();
     }
 }

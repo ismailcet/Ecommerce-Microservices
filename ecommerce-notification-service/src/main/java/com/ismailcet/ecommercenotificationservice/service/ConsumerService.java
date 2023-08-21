@@ -25,7 +25,8 @@ public class ConsumerService {
             groupId = "${spring.kafka.consumer.group-id}"
     )
     public void consume(PaymentEvent event){
-        logger.info("Deneme : " + event);
-
+        stockService.decreaseStock(event.getProductIdList());
+        emailService.sendEmailByUserEmail(event.getUserEmail());
+        paymentStatusService.changeStatusWithOrderId(event.getOrderId());
     }
 }

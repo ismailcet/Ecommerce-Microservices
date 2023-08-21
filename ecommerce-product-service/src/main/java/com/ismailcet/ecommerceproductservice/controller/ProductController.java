@@ -3,6 +3,8 @@ package com.ismailcet.ecommerceproductservice.controller;
 import com.ismailcet.ecommerceproductservice.dto.request.CreateProductRequest;
 import com.ismailcet.ecommerceproductservice.dto.response.ProductDto;
 import com.ismailcet.ecommerceproductservice.service.ProductService;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ public class ProductController {
     }
 
     @PostMapping()
+    @CachePut(value="product")
     public ResponseEntity<ProductDto> createProduct(@RequestBody @NotNull CreateProductRequest createProductRequest){
         return new ResponseEntity<>(
                 productService.createProduct(createProductRequest),
@@ -39,6 +42,7 @@ public class ProductController {
         productService.deleteProductById(id);
     }
     @GetMapping()
+    @Cacheable(value = "ProductDto")
     public ResponseEntity<List<ProductDto>> getAllProducts(){
         return ResponseEntity.ok(productService.getAllProducts());
     }
@@ -46,9 +50,8 @@ public class ProductController {
     public ResponseEntity<ProductDto> getProductByProductId(@PathVariable("productId") Integer id){
         return ResponseEntity.ok(productService.getProductByProductId(id));
     }
-
-    @PutMapping("/stock/${productId}")
-    public ResponseEntity<String> decreaseStockByProductId(@PathVariable Integer id, @RequestBody Integer number){
-        return ResponseEntity.ok(productService.decreaseStockByProductId(id, number));
+    @GetMapping("/{productId}/stock/{quantity}")
+    public ResponseEntity<String> decreaseStockByProductId(@PathVariable("productId") Integer id,@PathVariable("quantity") Integer quantity){
+        return ResponseEntity.ok(productService.decreaseStockByProductId(id, quantity));
     }
 }
