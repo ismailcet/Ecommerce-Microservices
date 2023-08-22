@@ -20,6 +20,7 @@
     <module>api-gateway</module>
       <module>ecommerce-payment-service</module>
       <module>ecommerce-notification-service</module>
+    <module>authentication-server</module>
   </modules>
 
 
