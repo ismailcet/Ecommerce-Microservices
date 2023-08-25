@@ -5,6 +5,7 @@ import com.ismailcet.ecommerceuserservice.dto.response.UserDto;
 import com.ismailcet.ecommerceuserservice.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,7 @@ public class UserController {
                 .ok(userService.updateUserByUserId(id, createUserRequest));
     }
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<UserDto> getUserByUserId(@PathVariable("userId") Integer id){
         return ResponseEntity
                 .ok(userService.getUserByUserId(id));
@@ -41,10 +43,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByUserName(username));
     }
     @GetMapping()
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<List<UserDto>> getAllUser(){
         return ResponseEntity.ok(userService.getAllUser());
     }
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity deleteUserByUserId(@PathVariable("userId") Integer id){
         userService.deleteUserByUserId(id);
         return ResponseEntity

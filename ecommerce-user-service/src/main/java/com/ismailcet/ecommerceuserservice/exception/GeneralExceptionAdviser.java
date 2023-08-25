@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GeneralExceptionAdviser {
@@ -25,5 +27,11 @@ public class GeneralExceptionAdviser {
                         details);
 
         return new ResponseEntity<>(response.getMessage(), response.getStatus());
+    }
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<?> unauthorizedException(UnauthorizedException exception) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", exception.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.UNAUTHORIZED);
     }
 }
