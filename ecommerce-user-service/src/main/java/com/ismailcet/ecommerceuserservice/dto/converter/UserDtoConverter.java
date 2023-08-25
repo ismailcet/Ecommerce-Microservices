@@ -11,6 +11,8 @@ public class UserDtoConverter {
                 .name(user.getName())
                 .surname(user.getSurname())
                 .email(user.getEmail())
+                .username(user.getUsername())
+                .password(user.getPassword())
                 .age(user.getAge())
                 .gender(user.getGender())
                 .userRole(user.getUserRole())

@@ -26,6 +26,7 @@ public class UserService {
                 .surname(createUserRequest.getSurname())
                 .email(createUserRequest.getEmail())
                 .password(PasswordUtils.hashPassword(createUserRequest.getPassword()))
+                .username(createUserRequest.getUsername())
                 .age(createUserRequest.getAge())
                 .gender(createUserRequest.getGender())
                 .userRole(createUserRequest.getUserRole())
@@ -56,6 +57,11 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User Not Found"));
 
+        return UserDtoConverter.converter(user);
+    }
+    public UserDto getUserByUserName(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User Not Found ! "));
         return UserDtoConverter.converter(user);
     }
 

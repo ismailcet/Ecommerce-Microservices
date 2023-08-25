@@ -1,15 +1,9 @@
-package com.ismailcet.ecommerceuserservice.dto.response;
+package com.ismailcet.authenticationserver.dto.response;
 
-import com.ismailcet.ecommerceuserservice.entity.UserRole;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.ismailcet.authenticationserver.dto.request.UserRole;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserDto {
     private String name;
     private String surname;

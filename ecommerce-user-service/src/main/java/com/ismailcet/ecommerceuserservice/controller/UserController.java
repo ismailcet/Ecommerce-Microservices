@@ -20,7 +20,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<UserDto> createUser(@RequestBody CreateUserRequest createUserRequest){
+    public ResponseEntity<UserDto> register(@RequestBody CreateUserRequest createUserRequest){
         return new ResponseEntity<>(
                 userService.createUser(createUserRequest),
                 HttpStatus.CREATED
@@ -35,6 +35,10 @@ public class UserController {
     public ResponseEntity<UserDto> getUserByUserId(@PathVariable("userId") Integer id){
         return ResponseEntity
                 .ok(userService.getUserByUserId(id));
+    }
+    @GetMapping("/find/{username}")
+    public ResponseEntity<UserDto> getUserByUserName(@PathVariable String username){
+        return ResponseEntity.ok(userService.getUserByUserName(username));
     }
     @GetMapping()
     public ResponseEntity<List<UserDto>> getAllUser(){

@@ -24,12 +24,15 @@ public class User {
     private String surname;
     @Column(name = "email")
     private String email;
+    @Column(name = "username")
+    private String username;
     @Column(name = "password")
     private String password;
     @Column(name = "age")
     private Integer age;
     @Column(name = "gender")
     private String gender;
+    @Enumerated(EnumType.STRING)
     @Column(name = "userRole")
     private UserRole userRole;
 }
