@@ -1,6 +1,7 @@
 package com.ismailcet.ecommerceuserservice.controller;
 
 import com.ismailcet.ecommerceuserservice.dto.request.CreateUserRequest;
+import com.ismailcet.ecommerceuserservice.dto.response.GetUserByUserNameResponse;
 import com.ismailcet.ecommerceuserservice.dto.response.UserDto;
 import com.ismailcet.ecommerceuserservice.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -33,13 +34,13 @@ public class UserController {
                 .ok(userService.updateUserByUserId(id, createUserRequest));
     }
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('admin') or #id == authentication.principal.id")
     public ResponseEntity<UserDto> getUserByUserId(@PathVariable("userId") Integer id){
         return ResponseEntity
                 .ok(userService.getUserByUserId(id));
     }
     @GetMapping("/find/{username}")
-    public ResponseEntity<UserDto> getUserByUserName(@PathVariable String username){
+    public ResponseEntity<GetUserByUserNameResponse> getUserByUserName(@PathVariable String username){
         return ResponseEntity.ok(userService.getUserByUserName(username));
     }
     @GetMapping()

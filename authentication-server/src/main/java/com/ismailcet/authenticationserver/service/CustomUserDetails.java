@@ -1,5 +1,6 @@
 package com.ismailcet.authenticationserver.service;
 
+import com.ismailcet.authenticationserver.dto.response.GetUserByUserName;
 import com.ismailcet.authenticationserver.dto.response.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,9 +11,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CustomUserDetails implements UserDetails {
-    private final UserDto user;
+    private final GetUserByUserName user;
 
-    public CustomUserDetails(UserDto user) {
+    public CustomUserDetails(GetUserByUserName user) {
         this.user = user;
     }
 
@@ -22,7 +23,9 @@ public class CustomUserDetails implements UserDetails {
                 .map(x -> new SimpleGrantedAuthority("ROLE_" + x.name()))
                 .collect(Collectors.toList());
     }
-
+    public Integer getUserId(){
+        return user.getId();
+    }
     @Override
     public String getPassword() {
         return user.getPassword();

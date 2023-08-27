@@ -20,15 +20,16 @@ public class JwtService {
     public JwtService(CustomUserDetailService customUserDetailService) {
         this.customUserDetailService = customUserDetailService;
     }
-    public String generateToken(String username){
+    public String generateToken(String username, Integer id){
         UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails);
+        return createToken(claims, userDetails, id);
     }
 
-    private String createToken(Map<String, Object> claims, UserDetails userDetails){
+    private String createToken(Map<String, Object> claims, UserDetails userDetails, Integer id){
         return Jwts.builder()
                 .setClaims(claims)
+                .setId(String.valueOf(id))
                 .setSubject(userDetails.getUsername())
                 .setIssuer(userDetails.getAuthorities().iterator().next().getAuthority())
                 .setIssuedAt(new Date(System.currentTimeMillis()))

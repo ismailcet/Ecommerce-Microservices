@@ -1,6 +1,7 @@
 package com.ismailcet.authenticationserver.client;
 
 import com.ismailcet.authenticationserver.dto.request.CreateUserRequest;
+import com.ismailcet.authenticationserver.dto.response.GetUserByUserName;
 import com.ismailcet.authenticationserver.dto.response.UserDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -14,5 +15,5 @@ public interface UserServiceClient {
     @PostMapping()
     public ResponseEntity<UserDto> register(@RequestBody CreateUserRequest createUserRequest);
     @GetMapping("/find/{username}")
-    public ResponseEntity<UserDto> getUserByUserName(@PathVariable String username);
+    public ResponseEntity<GetUserByUserName> getUserByUserName(@PathVariable String username);
 }

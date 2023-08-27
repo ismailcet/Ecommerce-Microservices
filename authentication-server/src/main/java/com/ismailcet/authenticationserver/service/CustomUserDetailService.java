@@ -1,6 +1,7 @@
 package com.ismailcet.authenticationserver.service;
 
 import com.ismailcet.authenticationserver.client.UserServiceClient;
+import com.ismailcet.authenticationserver.dto.response.GetUserByUserName;
 import com.ismailcet.authenticationserver.dto.response.UserDto;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,7 +18,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDto user =
+        GetUserByUserName user =
                 userServiceClient.getUserByUserName(username).getBody();
         assert user != null;
         return new CustomUserDetails(user);

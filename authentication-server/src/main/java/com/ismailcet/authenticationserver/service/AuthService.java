@@ -3,6 +3,7 @@ package com.ismailcet.authenticationserver.service;
 import com.ismailcet.authenticationserver.client.UserServiceClient;
 import com.ismailcet.authenticationserver.dto.request.CreateUserRequest;
 import com.ismailcet.authenticationserver.dto.request.LoginRequest;
+import com.ismailcet.authenticationserver.dto.response.GetUserByUserName;
 import com.ismailcet.authenticationserver.dto.response.TokenDto;
 import com.ismailcet.authenticationserver.dto.response.UserDto;
 import com.ismailcet.authenticationserver.exception.WrongCredentialsException;
@@ -27,8 +28,10 @@ public class AuthService {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if(authentication.isAuthenticated()){
+            GetUserByUserName user =
+                    userServiceClient.getUserByUserName(request.getUsername()).getBody();
             return TokenDto.builder()
-                    .token(jwtService.generateToken(request.getUsername()))
+                    .token(jwtService.generateToken(request.getUsername(), user.getId()))
                     .build();
         }
         else throw new WrongCredentialsException("Wrong Credentials ! ");

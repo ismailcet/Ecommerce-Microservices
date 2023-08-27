@@ -2,6 +2,7 @@ package com.ismailcet.ecommerceuserservice.service;
 
 import com.ismailcet.ecommerceuserservice.dto.converter.UserDtoConverter;
 import com.ismailcet.ecommerceuserservice.dto.request.CreateUserRequest;
+import com.ismailcet.ecommerceuserservice.dto.response.GetUserByUserNameResponse;
 import com.ismailcet.ecommerceuserservice.dto.response.UserDto;
 import com.ismailcet.ecommerceuserservice.entity.User;
 import com.ismailcet.ecommerceuserservice.exception.UserNotFoundException;
@@ -59,10 +60,10 @@ public class UserService {
 
         return UserDtoConverter.converter(user);
     }
-    public UserDto getUserByUserName(String username) {
+    public GetUserByUserNameResponse getUserByUserName(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User Not Found ! "));
-        return UserDtoConverter.converter(user);
+        return UserDtoConverter.converterToUsername(user);
     }
 
     public List<UserDto> getAllUser() {
