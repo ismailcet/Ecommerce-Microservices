@@ -4,12 +4,19 @@ import com.ismailcet.ecommerceuserservice.dto.request.CreateUserRequest;
 import com.ismailcet.ecommerceuserservice.dto.response.GetUserByUserNameResponse;
 import com.ismailcet.ecommerceuserservice.dto.response.UserDto;
 import com.ismailcet.ecommerceuserservice.service.UserService;
+import io.jsonwebtoken.Jwt;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -29,13 +36,14 @@ public class UserController {
         );
     }
     @PutMapping("/{userId}")
+    @PreAuthorize("authentication.principal == #id")
     public ResponseEntity<UserDto> updateUserByUserId(@PathVariable("userId") Integer id, @RequestBody CreateUserRequest createUserRequest){
         return ResponseEntity
                 .ok(userService.updateUserByUserId(id, createUserRequest));
     }
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('admin') or #id == authentication.principal.id")
-    public ResponseEntity<UserDto> getUserByUserId(@PathVariable("userId") Integer id){
+    @PreAuthorize("hasRole('admin') or authentication.principal == #id")
+    public ResponseEntity<UserDto> getUserByUserId(@PathVariable("userId") Integer id, Authentication authentication){
         return ResponseEntity
                 .ok(userService.getUserByUserId(id));
     }
@@ -49,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUser());
     }
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('admin') or authentication.principal == #id")
     public ResponseEntity deleteUserByUserId(@PathVariable("userId") Integer id){
         userService.deleteUserByUserId(id);
         return ResponseEntity
