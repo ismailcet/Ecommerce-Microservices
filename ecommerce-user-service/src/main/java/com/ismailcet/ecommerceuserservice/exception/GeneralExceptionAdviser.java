@@ -30,8 +30,16 @@ public class GeneralExceptionAdviser {
     }
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<?> unauthorizedException(UnauthorizedException exception) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put("error", exception.getMessage());
-        return new ResponseEntity<>(errors, HttpStatus.UNAUTHORIZED);
+        List<String> details = new ArrayList<>();
+        details.add(exception.getMessage());
+
+        ExceptionResponse response =
+                new ExceptionResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.UNAUTHORIZED,
+                        exception.getMessage(),
+                        details);
+
+        return new ResponseEntity<>(response.getMessage(), response.getStatus());
     }
 }
